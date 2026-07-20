@@ -12,6 +12,7 @@
 import { createLogger } from './_shared';
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
+import bundledSchema from '../api-schema.json';
 
 const logger = createLogger('api-proxy');
 
@@ -84,6 +85,13 @@ export async function loadApiSchema(env: Record<string, string | undefined>): Pr
     }
   }
 
+  // Priority 4: Build-time bundled schema (works in serverless runtime)
+  if (bundledSchema && Array.isArray((bundledSchema as any).tools)) {
+    _schemaCache = bundledSchema as ApiSchema;
+    logger.log(`[schema] loaded bundled api-schema.json with ${_schemaCache.tools.length} tools`);
+    return _schemaCache;
+  }
+  
   return null;
 }
 
