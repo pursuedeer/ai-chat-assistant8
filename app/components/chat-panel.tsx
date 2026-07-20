@@ -38,7 +38,11 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
     const key = 'ai-chat-assistant-cid';
     let cid = localStorage.getItem(key);
     if (!cid) {
-      cid = crypto.randomUUID();
+      //cid = crypto.randomUUID();
+      cid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 3) | 8).toString(16);
+      });
       localStorage.setItem(key, cid);
     }
     return cid;
