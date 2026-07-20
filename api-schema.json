@@ -1,0 +1,58 @@
+{
+  "tools": [
+    {
+      "name": "query_data_warehouse",
+      "description": "查询企业数仓。\n\n## 核心用法\n- DataId=1000：查询【数仓目录】（所有可用数据集的列表，含主键ID、名称、说明、字段列表）。**每次新对话开始时，必须先调用一次 DataId=1000，获取可用数据集和字段信息。**\n- DataId=其他值（如1056、1058等）：查询该数据集的具体数据。\n\n## 参数规则\n- DataId【必填】：1000=查目录；其他值=查对应数据集的数据。\n- TopRows：返回记录条数。**明细查询默认1000**；汇总查询默认0，表示返回全部汇总结果；用户明确要“前N名”时设为N。\n- Where：SQL WHERE条件，标准SQL语法。多个条件用AND/OR连接。\n- Select：SELECT字段列表，可包含聚合函数如SUM()、COUNT()、AVG()。不填则默认返回全部字段。\n- GroupBy：汇总分组字段，用于GROUP BY。涉及“各XX的YY”“按XX统计”时必填。\n- OrderBy：排序规则，如“金额 DESC”或“数量 ASC”。涉及“排名”“前N”“最大/最小”时必填。\n\n## 调用流程\n1. 新对话开始 → 先用 DataId=1000 获取数仓目录\n2. 根据用户问题 → 从目录中匹配最相关的数据集（匹配名称或说明）\n3. 确定目标 DataId → 用 Where/Select/GroupBy/OrderBy 构造查询\n4. 返回结果 → 用自然语言总结\n\n## 示例\n用户问：\"流向明细里三甲医院有哪些？\"\n→ DataId=1056, Select=\"DISTINCT 终端名称\", Where=\"终端属性='三甲医院'\", TopRows=1000\n\n用户问：\"各事业部销售额排名\"\n→ DataId=1056, Select=\"事业部,SUM(金额) AS 销售额\", GroupBy=\"事业部\", OrderBy=\"销售额 DESC\", TopRows=0",
+      "endpoint": "POST /Service/invoke?id=-1&name=MSSQLDATAAIXX50",
+      "parameters": {
+        "DataId": {
+          "type": "integer",
+          "description": "数仓数据集ID。1000=查询数仓目录（获取所有可用数据集及字段列表）；其他值=查询对应数据集的数据。必填。"
+        },
+        "TopRows": {
+          "type": "integer",
+          "description": "返回记录条数。明细查询默认1000，汇总查询默认0（返回全部汇总结果）。用户明确要求“前N名”时设为N。"
+        },
+        "Where": {
+          "type": "string",
+          "description": "SQL WHERE 筛选条件，标准SQL语法。示例：终端属性='三甲医院' AND 单据日期>='2025-01-01' AND 事业部 IN ('肿瘤','心血管')"
+        },
+        "Select": {
+          "type": "string",
+          "description": "SELECT 字段列表，可包含聚合函数。示例：终端名称,商品名称,SUM(金额) AS 销售额。不填则默认返回全部字段。"
+        },
+        "GroupBy": {
+          "type": "string",
+          "description": "GROUP BY 分组字段，用于汇总统计。示例：事业部 或 终端名称,商品名称。汇总查询时涉及“各XX”“按XX统计”必填。"
+        },
+        "OrderBy": {
+          "type": "string",
+          "description": "ORDER BY 排序规则。示例：金额 DESC 或 销售额 DESC 或 数量 ASC。涉及“排名”“前N”必填。"
+        }
+      }
+    },    
+    {
+      "name": "search_posts",
+      "description": "Search blog posts by keyword. Returns title, summary, category, tags, and author.",
+      "endpoint": "GET /api/posts",
+      "parameters": {
+        "q": { "type": "string", "description": "Search keyword" },
+        "category": { "type": "string", "description": "Filter by category" }
+      }
+    },
+    {
+      "name": "get_post",
+      "description": "Get the full content of a single blog post by its ID. Use search_posts first if you don't know the ID.",
+      "endpoint": "GET /api/posts/{id}",
+      "parameters": {
+        "id": { "type": "string", "description": "The post ID", "required": true }
+      }
+    },
+    {
+      "name": "get_categories",
+      "description": "List all blog categories with article count.",
+      "endpoint": "GET /api/categories",
+      "parameters": {}
+    }
+  ]
+}
