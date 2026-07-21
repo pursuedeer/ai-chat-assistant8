@@ -33,6 +33,7 @@
 
   var color = (script && script.getAttribute('data-color')) || '#6366f1';
   var position = (script && script.getAttribute('data-position')) || 'bottom-right';
+  var enableMaximize = (script && script.getAttribute('data-maximize')) === 'true';
   var isLeft = position === 'bottom-left';
   var side = isLeft ? 'left' : 'right';
 
@@ -69,7 +70,9 @@
     'pointer-events:none;background:#fff;overflow:hidden}' +
     '#__aa-frame.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}' +
     '@media(max-width:480px){#__aa-frame{width:100vw;height:100vh;max-height:100vh;' +
-    'bottom:0;' + side + ':0;border-radius:0}}';
+    'bottom:0;' + side + ':0;border-radius:0}}' +
+    '#__aa-maximize{position:fixed;z-index:2147483648;width:28px;height:28px;border:none;border-radius:6px;background:rgba(0,0,0,.06);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}#__aa-maximize:hover{background:rgba(0,0,0,.12)}#__aa-maximize svg{width:16px;height:16px;fill:#555}#__aa-frame.maximized{width:100vw;height:100vh;bottom:0;left:0;right:0;border-radius:0;max-height:100vh;max-width:100vw}';
+
   document.head.appendChild(css);
 
   // ─── Bubble ──────────────────────────────────────────────────────────────
@@ -87,6 +90,17 @@
   frame.src = origin + '/widget';
   frame.setAttribute('allow', 'clipboard-write');
   document.body.appendChild(frame);
+var maxBtn = null;
+var isMaximized = false;
+if (enableMaximize) {
+  maxBtn = document.createElement('button');
+  maxBtn.id = '__aa-maximize';
+  maxBtn.setAttribute('aria-label', 'Maximize');
+  maxBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>';
+  maxBtn.style.display = 'none';
+  document.body.appendChild(maxBtn);
+}
+  
 
   // Send page context to iframe once it loads
   var contextSent = false;
@@ -117,11 +131,41 @@
   }, 1000);
 
   // ─── Toggle ──────────────────────────────────────────────────────────────
+
+var restoreIcon = '<svg viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+
+function positionMaxBtn() {
+  if (!maxBtn || !isOpen) { if (maxBtn) maxBtn.style.display = 'none'; return; }
+  maxBtn.style.display = 'flex';
+  if (isMaximized) {
+    maxBtn.style.top = '12px';
+    maxBtn.style[side] = '12px';
+  } else {
+    var rect = frame.getBoundingClientRect();
+    maxBtn.style.top = (rect.top + 8) + 'px';
+    maxBtn.style[side] = side === 'left' ? (rect.left + rect.width - 36) + 'px' : (window.innerWidth - rect.right + 8) + 'px';
+  }
+}
+
+if (maxBtn) {
+  maxBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    isMaximized = !isMaximized;
+    frame.classList.toggle('maximized', isMaximized);
+    maxBtn.innerHTML = isMaximized ? restoreIcon : maxBtn.innerHTML; // 第一次是 maximizeIcon
+    // 更简洁：
+    maxBtn.innerHTML = isMaximized ? restoreIcon : '<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>';
+    positionMaxBtn();
+  });
+}
+
+  
   var isOpen = false;
   bubble.addEventListener('click', function () {
     isOpen = !isOpen;
     frame.classList.toggle('open', isOpen);
     bubble.innerHTML = isOpen ? closeIcon : chatIcon;
+    if (maxBtn) positionMaxBtn();
     if (isOpen && !contextSent) {
       frame.contentWindow.postMessage({
         type: '__aa_page_context',
