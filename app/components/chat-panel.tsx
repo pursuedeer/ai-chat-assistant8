@@ -218,7 +218,7 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
                 </linearGradient>
               </defs>
             </svg>
-            <span className="text-sm font-semibold text-gray-900">{isZh ? 'AI 助手' : config.name}</span>
+            <span className="text-sm font-semibold text-gray-900">{config.name.split('|')[isZh ? 1 : 0] ?? config.name}</span>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
@@ -278,12 +278,10 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {isZh ? '你好，我是 ' : 'Hey, This is '}<span className="bg-gradient-to-r from-indigo-500 via-pink-400 to-amber-400 bg-clip-text text-transparent">{isZh ? 'AI 助手' : config.name}</span>
+              {isZh ? '你好，我是 ' : 'Hey, This is '}<span className="bg-gradient-to-r from-indigo-500 via-pink-400 to-amber-400 bg-clip-text text-transparent">{config.name.split('|')[isZh ? 1 : 0] ?? config.name}</span>
             </h3>
             <p className="text-xs text-gray-400 mb-4 max-w-[320px] leading-relaxed">
-              {isZh
-                ? '可嵌入任何网站的 AI 助手，一行代码添加聊天 Widget，自动理解页面内容，支持实时查询后端 API。'
-                : 'Embeddable AI assistant for any website. One line of code to add a chat widget that understands page content and queries your backend APIs.'}
+              {config.welcome.split('|')[isZh ? 1 : 0] ?? config.welcome}
             </p>
 
             {/* Suggested Questions */}
@@ -295,7 +293,7 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
                     onClick={() => sendMessage(q)}
                     className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition text-left group"
                   >
-                    <span className="text-sm text-gray-700 group-hover:text-indigo-700 line-clamp-1">{q}</span>
+                    <span className="text-sm text-gray-700 group-hover:text-indigo-700 line-clamp-1">{q.split('|')[isZh ? 1 : 0] ?? q}</span>
                     <svg className="w-4 h-4 text-gray-300 group-hover:text-indigo-400 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none"><path d="M14.53 12L8.32 6.23l1.36-1.47 7 6.5.79.74-.79.73-7 6.5-1.36-1.47L14.53 12z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"/></svg>
                   </button>
                 ))}
