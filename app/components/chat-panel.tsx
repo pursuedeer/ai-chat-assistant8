@@ -86,7 +86,8 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
   useEffect(scrollToBottom, [messages, scrollToBottom]);
 
   const sendMessage = useCallback(async (text?: string) => {
-    const msg = text || input.trim();
+    let msg = text || input.trim();
+    msg = msg.split('|')[isZh ? 0 : 1] ?? msg;
     if (!msg || isStreaming) return;
     setInput('');
     setIsStreaming(true);
