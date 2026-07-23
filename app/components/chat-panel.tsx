@@ -182,7 +182,7 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
       setIsStreaming(false);
       abortRef.current = null;
     }
-  }, [input, isStreaming, conversationId]);
+  }, [input, isStreaming, conversationId, isZh]);
 
   const stopStream = useCallback(() => {
     abortRef.current?.abort();
