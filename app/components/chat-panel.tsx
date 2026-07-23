@@ -87,8 +87,8 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
 
   const sendMessage = useCallback(async (text?: string) => {
     let msg = text || input.trim();
-    //msg = msg.split('|')[isZh ? 0 : 1] ?? msg;
-    msg = `${isZh ? 'ZH|' : 'EN|'}${msg}`;
+    msg = msg.split('|')[isZh ? 0 : 1] ?? msg;
+    //msg = `${isZh ? 'ZH|' : 'EN|'}${msg}`;
     if (!msg || isStreaming) return;
     setInput('');
     setIsStreaming(true);
