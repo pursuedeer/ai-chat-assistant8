@@ -45,7 +45,7 @@
       title: document.title || '',
       url: location.href || '',
       content: (content || '').slice(0, 6000),
-      sessionId: localStorage.getItem('session_id') || ''
+      token: localStorage.getItem('auth_token') || ''
     };
   }
 
