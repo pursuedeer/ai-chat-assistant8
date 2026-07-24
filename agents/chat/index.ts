@@ -125,7 +125,7 @@ export async function onRequest(context: any) {
   const body = context.request.body ?? {};
   const message = typeof body.message === 'string' ? body.message.trim() : '';
   const pageContext: { title?: string; url?: string; content?: string } | undefined = body.pageContext;
-  const sessionId: string = body.sessionId || ''; 
+  const token: string = body.token || '';
 
 
   if (!message) {
@@ -250,7 +250,7 @@ export async function onRequest(context: any) {
 
           let result: any;
           if (apiSchema) {
-            result = await callTool(apiSchema, ctxEnv.DATA_API_BASE_URL || '', ctxEnv.DATA_API_KEY, tc.name, input, sessionId);
+            result = await callTool(apiSchema, ctxEnv.DATA_API_BASE_URL || '', ctxEnv.DATA_API_KEY, tc.name, input, token);
           } else {
             result = { error: `Unknown tool: ${tc.name}` };
           }
