@@ -51,6 +51,7 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
   const abortRef = useRef<AbortController | null>(null);
   const composingRef = useRef(false);
   const pageContextRef = useRef<{ title?: string; url?: string; content?: string } | null>(null);
+  const sessionIdRef = useRef<string>('');
 
   // Load config
   useEffect(() => {
@@ -71,6 +72,7 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
     function handleMessage(e: MessageEvent) {
       if (e.data?.type === '__aa_page_context' && e.data.payload) {
         pageContextRef.current = e.data.payload;
+        sessionIdRef.current = e.data.payload.sessionId || '';
       }
     }
     window.addEventListener('message', handleMessage);
@@ -109,6 +111,7 @@ export default function ChatPanel({ mode = 'full' }: { mode?: 'full' | 'widget' 
         },
         body: JSON.stringify({
           message: msg,
+          sessionId: sessionIdRef.current,
           ...(pageContextRef.current ? { pageContext: pageContextRef.current } : {}),
         }),
         signal: controller.signal,
