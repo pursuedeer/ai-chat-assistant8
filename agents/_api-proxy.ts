@@ -102,6 +102,7 @@ export async function callTool(
   apiKey: string | undefined,
   toolName: string,
   input: Record<string, any>,
+  sessionId?: string,  
 ): Promise<any> {
   const toolDef = schema.tools.find((t) => t.name === toolName);
   if (!toolDef) {
@@ -146,6 +147,7 @@ export async function callTool(
   // Build headers
   const headers: Record<string, string> = { 'Accept': 'application/json' };
   if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+  if (sessionId) headers['Cookie'] = `ASP.NET_SessionId=${sessionId}`;
 
   // Build fetch options
   const fetchOpts: RequestInit = { method: httpMethod, headers, signal: AbortSignal.timeout(15000) };
